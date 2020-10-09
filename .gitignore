@@ -4,3 +4,4 @@
 *.pt
 *.json
 .ipynb_checkpoints/
+data/
