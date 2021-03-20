@@ -88,9 +88,9 @@ class Friends():
                 msg = e
                 if "Failed to send request" in msg.reason:
                     pass
-                elif '429' in msg.reason:
-                    print('\tRateLimit', datetime.today().strftime("\t%H:%M:%S %d-%m-%Y"))
-                    time.sleep(15 * 60)
+#                 elif '429' in msg.reason:
+#                     print('\tRateLimit', datetime.today().strftime("\t%H:%M:%S %d-%m-%Y"))
+#                     time.sleep(15 * 60)
                 else:
                     return
             except StopIteration:
@@ -130,6 +130,10 @@ def get_user_first_tweet(usernames):
     start = time.perf_counter()
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for idx, username in enumerate(usernames, 1):
+            
+            if os.path.exists(f"../data/user_timeline_46K/{username}.json"):
+                continue
+            
             while True:
                 api, index_token = friends.get_free_token()
                 if index_token is not None:
@@ -137,7 +141,7 @@ def get_user_first_tweet(usernames):
                     executor.submit(friends.get_user_timeline, username, api, index_token)
                     break
                     
-            if idx == 10:
+            if (idx % 10) == 0:
                 print(idx)
     
     end = time.perf_counter()
@@ -148,4 +152,4 @@ if __name__ == '__main__':
     with open('../data/supports/46K_users.json', 'r') as f:
         usernames = json.load(f)
     
-    get_user_first_tweet(usernames[:20])
+    get_user_first_tweet(usernames)
